@@ -64,3 +64,40 @@ indefinite generation of material without repetition.
 No existing program for learning new languages satisfies all three criteria listed
 above. Creating such a system could unlock a new way for the determined user to learn a
 new language, and this is exactly what I hope do to with this project.
+
+
+========================================================================================
+
+
+                                        Road Map
+
+
+The first goal is to get to a minimal working version that I can use in my life: in my
+mind, this is a program that will read audiobooks out loud sentence by sentence, leaving
+time for me to repeat the last sentence back in between. Of course we can have some
+variation on the details. For exapmle, should the sentence first be read in the user's
+native language (forcing the user to perform the translation to the target language), or
+the target language (forcing the user to listen and understand a sentence in the target
+language)? We can just implement both and try them both! Both versions are important,
+since native first emphasizes translation while target first emphasizes listening. This
+minimal version at least somewhat touches the three criteria. Learning is natural, a
+curriculum can somewhat be created by starting with simpler books and moving towards
+more advanced books, and there are indefinite books to choose from without having to
+repeat any. This isn't the same as the end goal, but that's why it's the minimal working
+version.
+
+Goal: Write a program that reads a text file and produces an audio file in which the
+text file is read one sentence at a time, and time is allotted between sentences for the
+user to repeat the sentence back. In "native first" variation, each sentence is first
+spoken aloud in the user's native language, then (after a pause for the speaker to
+repeat the sentence in the target language) spoken in the target language (again
+followed by a pause for the user to correct their attempt). In the "target first"
+variation, each sentence is spoken aloud in the user's target language (followed by a
+pause for the user to repeat the sentence).
+
+Tasks:
+--> Translation from Spanish to English
+    Text-to-speech functionality in English
+    Text-to-speech functionality in Spanish
+    Produce call-and-response lesson from text file (target first)
+    Produce call-and-response lesson from text file (native first)
