@@ -1,0 +1,66 @@
+
+
+                                         Goals
+
+
+The goal of this project is to create a tool to help a user learn to speak a new
+language in a way that satisfies the following criteria:
+1. User is taught only through natural interaction: speaking/listening in conversation.
+2. Material follows a curated curriculum, though this is not visible to the user.
+3. Material can be generated indefinitely without repetition.
+I believe that a user which practices with such a tool consistently and persistently
+will inevitably learn to speak the new language, but existing programs for language
+learning satisfy at most two of the three criteria. The old-fashioned way (live in a
+country, learn their language) satisfies 1 and 3 but not 2, audio-based
+call-and-response programs like Pimsleur satisfy 1 and 2 but not 3, and modern popular
+language learning apps like Duo Lingo satisy 2 and 3 but not 1. These three criteria are
+essential if the user hopes to gain fluency from one single program.
+
+By natural interaction I mean listening and speaking in real conversations, as one
+learns their native language as a child, and not through synthetic language learning
+exercises such as multiple choice questions or conjugation tables. If speaking and
+listening in the new language is to become automatic, then learning should follow a
+program that promotes automatic usage: by automatic usage I mean speaking and listening
+on the spot, followed by a spoken response by the user or more listening. When a person
+trains for this kind of on-the-spot recall to the point of proficiency, then usage of
+the new language becomes instinctual and automatic, hopefully in a similar way as the
+native tongue. After being taught with natural learning methods such as the Harkness
+method and Tarrasch's approach to teaching chess, I strongly believe in the importance
+of learning through natural interaction as opposed to learning by being lectured. I do
+not think that fluency in a new language can ever come by filling out worksheets or
+reading about the language: the only real way to learn a language is to use the language
+naturally. This is the first desiderata of our tool.
+
+However, language learning through natural interaction has some drawbacks. The most
+apparent is practicality: it is often said that it is impossible to become fluent in a
+language without living in a country which primarily speaks that language. At the very
+least, one should have consistent interactions with native speakers. Unfortunately, this
+may not be possible or practical for many people. Another drawback of learning from
+natural interaction is in the choice of material: during natural conversations, the
+student may be exposed to linguistic concepts which are either too difficult or too easy
+to help the learning process. A curated curriculum is one strength of the traditional
+style of language learning, and this quality is absent from natural conversation. The
+curated curriculum is the second desiderata of our tool.
+
+The two drawbacks of learning from natural interaction (potential lack of native
+speakers, lack of curated curriculum) were tackled by some modern language learning
+programs, which teach through call-and-response audio lessons with curated curriculums
+(I think Pimsleur does a particularly good job of this). However, these programs suffer
+from one weakness which limits their usefulness for reaching fluency: limited content.
+Each Pimsleur program involve about 50 hours for a given language, made of 100
+conversations that are carefully written to follow a curriculum, involve repetition of
+words and concepts to maximize retention, emphasize correct pronunciation, and so on.
+After this, each conversation must be recorded by voice actors. The cost of this process
+limits the amount of possible content: it is simply impractical to write enough of this
+material so that a user can become fluent using the material alone. However, modern
+language and speech processing technology give us a solution: automatic content
+generation. We can generate text in response to prompts to create a conversation,
+translate between languages, convert text to audio, analyze pronunciation, and more.
+These capabilities enable endless content generation which can allow a user to practice
+speaking/listening indefinitely while never repeating material and constantly being
+exposed to new words and linguistic styles. This brings us to our final desiderata:
+indefinite generation of material without repetition.
+
+No existing program for learning new languages satisfies all three criteria listed
+above. Creating such a system could unlock a new way for the determined user to learn a
+new language, and this is exactly what I hope do to with this project.
