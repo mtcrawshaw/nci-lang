@@ -96,8 +96,17 @@ variation, each sentence is spoken aloud in the user's target language (followed
 pause for the user to repeat the sentence).
 
 Tasks:
---> Translation from Spanish to English
-    Text-to-speech functionality in English
+    Translation from Spanish to English
+--> Text-to-speech functionality in English
     Text-to-speech functionality in Spanish
     Produce call-and-response lesson from text file (target first)
     Produce call-and-response lesson from text file (native first)
+
+Dependencies:
+- Translation:
+  - googletrans (easiest to get started but it is unofficial: may not be supported
+    forever. Also it seems the newest version has a bug and there is a big rewrite
+    coming soon...version 3.1.0a0 works for now but I'm not sure if it will be reliable
+    with different Python versions.)
+  - Actual Google Translate API (likely to be supported for a long time, requires a
+    Google Cloud Project?)
