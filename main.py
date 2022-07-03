@@ -17,7 +17,9 @@ SRC_TEMP_PATH = "src.mp3"
 DURATION_LOG_PATH = "duration.log"
 
 
-def main(input_path: str, output_path: str):
+def main(
+    input_path: str, output_path: str, dest_first: bool = False, slow: bool = False
+):
     """ Main function for nci-lang. """
 
     # Read text to translate.
@@ -38,8 +40,8 @@ def main(input_path: str, output_path: str):
         dest_line = translator.translate(src_line, src=SRC_LANG, dest=DEST_LANG).text
 
         # Convert line (in both languages) to speech.
-        src_speech = gTTS(src_line, lang=SRC_LANG)
-        dest_speech = gTTS(dest_line, lang=DEST_LANG)
+        src_speech = gTTS(src_line, lang=SRC_LANG, slow=slow)
+        dest_speech = gTTS(dest_line, lang=DEST_LANG, slow=slow)
 
         # Get length of source sentence.
         src_speech.save(SRC_TEMP_PATH)
@@ -69,10 +71,13 @@ def main(input_path: str, output_path: str):
             pause = pause_file.read()
 
         # Append source speech, pause, dest speech, pause to audio stream.
-        src_speech.write_to_fp(audio_stream)
-        audio_stream.write(pause)
-        dest_speech.write_to_fp(audio_stream)
-        audio_stream.write(pause)
+        if dest_first:
+            ordered_speeches = [dest_speech, src_speech]
+        else:
+            ordered_speeches = [src_speech, dest_speech]
+        for speech in ordered_speeches:
+            speech.write_to_fp(audio_stream)
+            audio_stream.write(pause)
 
     # Close audio stream.
     audio_stream.close()
@@ -99,6 +104,21 @@ if __name__ == "__main__":
         type=str,
         default="lesson.mp3",
         help="Path in which to store generated audio in mp3 format."
+    )
+    parser.add_argument(
+        "--dest_first",
+        default=False,
+        action="store_true",
+        help=(
+            "If true, audio lesson includes the destination sentence before the "
+            "source sentence."
+        )
+    )
+    parser.add_argument(
+        "--slow",
+        default=False,
+        action="store_true",
+        help="Slow speech."
     )
     args = parser.parse_args()
 
