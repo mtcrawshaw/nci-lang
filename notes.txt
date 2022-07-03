@@ -101,7 +101,8 @@ Tasks:
     Text-to-speech functionality in Spanish
     Produce call-and-response lesson from text file (target first)
     Produce call-and-response lesson from text file (native first)
---> End-to-end (read text from file, save audio to file)
+    End-to-end (read text from file, save audio to file)
+--> Options (source vs. target order, slow speech)
 
 Dependencies:
 - Translation:
