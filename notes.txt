@@ -97,10 +97,11 @@ pause for the user to repeat the sentence).
 
 Tasks:
     Translation from Spanish to English
---> Text-to-speech functionality in English
+    Text-to-speech functionality in English
     Text-to-speech functionality in Spanish
     Produce call-and-response lesson from text file (target first)
     Produce call-and-response lesson from text file (native first)
+--> End-to-end (read text from file, save audio to file)
 
 Dependencies:
 - Translation:
@@ -110,3 +111,7 @@ Dependencies:
     with different Python versions.)
   - Actual Google Translate API (likely to be supported for a long time, requires a
     Google Cloud Project?)
+- Text to speech:
+  - gTTS (again unofficial, but easy to use. May break.)
+  - Google Cloud Text-to-Speech (I don't even wanna look at this because it looks like
+    it requires Google Cloud and possibly costs money.)
