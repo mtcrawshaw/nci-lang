@@ -10,25 +10,49 @@ from gtts import gTTS
 
 SRC_LANG = "es"
 DEST_LANG = "en"
-PAUSE_MULT = 1
+PAUSE_MULT = 1.2
 PAUSE_PATH = "silence.mp3"
 PAUSE_LOG_PATH = "pause.log"
 SRC_TEMP_PATH = "src.mp3"
 DURATION_LOG_PATH = "duration.log"
+PADDING_LEN = 3
+
+
+def silence(seconds: int) -> bytes:
+    """
+    Generate silent audio encoded in mp3 format. Note that we have to match the sampling
+    frequency (24 kHz) of the audio returned by gTTS.
+    """
+    silence_cmd = f"ffmpeg -f lavfi -i anullsrc=r=24000:cl=mono -t {seconds} "
+    silence_cmd += f"-q:a 9 -acodec libmp3lame -y {PAUSE_PATH}"
+    silence_cmd += f" > {PAUSE_LOG_PATH} 2>&1"
+    exit_code = os.system(silence_cmd)
+    if exit_code != 0:
+        raise RuntimeError(
+            "Generatation of silent MP3 with ffmpeg failed."
+            f" Check output in {PAUSE_LOG_PATH}."
+        )
+    with open(PAUSE_PATH, "rb") as pause_file:
+        pause = pause_file.read()
+    return pause
 
 
 def main(
     input_path: str, output_path: str, dest_first: bool = False, slow: bool = False
-):
+) -> None:
     """ Main function for nci-lang. """
 
     # Read text to translate.
     with open(input_path, "r") as input_file:
         src_text = input_file.read()
 
+    # Initialize audio file with padding.
+    audio_stream = open(output_path, "wb")
+    pause = silence(PADDING_LEN)
+    audio_stream.write(pause)
+
     # Generate translated audio and write to file.
     translator = Translator()
-    audio_stream = open(output_path, "wb")
     for src_line in re.split("\.|!|\?", src_text):
 
         # Skip empty lines.
@@ -55,20 +79,8 @@ def main(
         with open(DURATION_LOG_PATH) as duration_file:
             src_duration = int(duration_file.read())
 
-        # Generate MP3 encoding of pause. Note that we have to match the sampling
-        # frequency (24 kHz) of the audio returned by gTTS.
-        pause_seconds = round(src_duration * PAUSE_MULT)
-        silence_cmd = f"ffmpeg -f lavfi -i anullsrc=r=24000:cl=mono -t {pause_seconds} "
-        silence_cmd += f"-q:a 9 -acodec libmp3lame -y {PAUSE_PATH}"
-        silence_cmd += f" > {PAUSE_LOG_PATH} 2>&1"
-        exit_code = os.system(silence_cmd)
-        if exit_code != 0:
-            raise RuntimeError(
-                "Generatation of silent MP3 (for pauses) with ffmpeg failed."
-                f" Check output in {PAUSE_LOG_PATH}."
-            )
-        with open(PAUSE_PATH, "rb") as pause_file:
-            pause = pause_file.read()
+        # Generate pause. 
+        pause = silence(round(src_duration * PAUSE_MULT))
 
         # Append source speech, pause, dest speech, pause to audio stream.
         if dest_first:
