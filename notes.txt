@@ -104,7 +104,9 @@ Tasks:
     End-to-end (read text from file, save audio to file)
     Options (source vs. target order, slow speech)
     Initial padding
---> Add requirements.txt
+    Options to set source and destination languages
+--> Fix changing file length (variable bitrate?)
+    Add requirements.txt
 
 We now have the minimum working version. Just gotta use it on a book and start trying it
 out.
@@ -122,3 +124,9 @@ Dependencies:
   - gTTS (again unofficial, but easy to use. May break.)
   - Google Cloud Text-to-Speech (I don't even wanna look at this because it looks like
     it requires Google Cloud and possibly costs money.)
+
+Future changes:
+- Better parsing into individual sentences: right now punctuation like that in "Mr."
+  will be treated as a delimiter between sentences.
+- Better trimming of white space: right now newlines in the text will create a pause in
+  the speech.

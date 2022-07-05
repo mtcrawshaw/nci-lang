@@ -8,14 +8,12 @@ from googletrans import Translator
 from gtts import gTTS
 
 
-SRC_LANG = "es"
-DEST_LANG = "en"
-PAUSE_MULT = 1.2
+PAUSE_MULT = 1.1
 PAUSE_PATH = "silence.mp3"
 PAUSE_LOG_PATH = "pause.log"
 SRC_TEMP_PATH = "src.mp3"
 DURATION_LOG_PATH = "duration.log"
-PADDING_LEN = 3
+PADDING_LEN = 2
 
 
 def silence(seconds: int) -> bytes:
@@ -38,7 +36,12 @@ def silence(seconds: int) -> bytes:
 
 
 def main(
-    input_path: str, output_path: str, dest_first: bool = False, slow: bool = False
+    input_path: str,
+    output_path: str,
+    src_lang: str,
+    dest_lang: str,
+    dest_first: bool = False,
+    slow: bool = False,
 ) -> None:
     """ Main function for nci-lang. """
 
@@ -61,11 +64,11 @@ def main(
             continue
 
         # Translate line to target language.
-        dest_line = translator.translate(src_line, src=SRC_LANG, dest=DEST_LANG).text
+        dest_line = translator.translate(src_line, src=src_lang, dest=dest_lang).text
 
         # Convert line (in both languages) to speech.
-        src_speech = gTTS(src_line, lang=SRC_LANG, slow=slow)
-        dest_speech = gTTS(dest_line, lang=DEST_LANG, slow=slow)
+        src_speech = gTTS(src_line, lang=src_lang, slow=slow)
+        dest_speech = gTTS(dest_line, lang=dest_lang, slow=slow)
 
         # Get length of source sentence.
         src_speech.save(SRC_TEMP_PATH)
@@ -116,6 +119,18 @@ if __name__ == "__main__":
         type=str,
         default="lesson.mp3",
         help="Path in which to store generated audio in mp3 format."
+    )
+    parser.add_argument(
+        "--src_lang",
+        type=str,
+        default="en",
+        help="Language of source text."
+    )
+    parser.add_argument(
+        "--dest_lang",
+        type=str,
+        default="es",
+        help="Language into which to translate source text."
     )
     parser.add_argument(
         "--dest_first",
