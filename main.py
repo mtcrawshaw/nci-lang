@@ -22,7 +22,7 @@ def silence(seconds: int) -> bytes:
     frequency (24 kHz) of the audio returned by gTTS.
     """
     silence_cmd = f"ffmpeg -f lavfi -i anullsrc=r=24000:cl=mono -t {seconds} "
-    silence_cmd += f"-q:a 9 -acodec libmp3lame -y {PAUSE_PATH}"
+    silence_cmd += f"-b:a 32k -acodec libmp3lame -y {PAUSE_PATH}"
     silence_cmd += f" > {PAUSE_LOG_PATH} 2>&1"
     exit_code = os.system(silence_cmd)
     if exit_code != 0:
@@ -40,7 +40,7 @@ def main(
     output_path: str,
     src_lang: str,
     dest_lang: str,
-    dest_first: bool = False,
+    src_first: bool = False,
     slow: bool = False,
 ) -> None:
     """ Main function for nci-lang. """
@@ -86,10 +86,10 @@ def main(
         pause = silence(round(src_duration * PAUSE_MULT))
 
         # Append source speech, pause, dest speech, pause to audio stream.
-        if dest_first:
-            ordered_speeches = [dest_speech, src_speech]
-        else:
+        if src_first:
             ordered_speeches = [src_speech, dest_speech]
+        else:
+            ordered_speeches = [dest_speech, src_speech]
         for speech in ordered_speeches:
             speech.write_to_fp(audio_stream)
             audio_stream.write(pause)
@@ -133,12 +133,12 @@ if __name__ == "__main__":
         help="Language into which to translate source text."
     )
     parser.add_argument(
-        "--dest_first",
+        "--src_first",
         default=False,
         action="store_true",
         help=(
-            "If true, audio lesson includes the destination sentence before the "
-            "source sentence."
+            "If true, audio lesson includes the source sentence before the "
+            "destination sentence."
         )
     )
     parser.add_argument(
