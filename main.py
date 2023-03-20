@@ -9,20 +9,21 @@ from gtts import gTTS
 
 
 PAUSE_MULT = 1.1
-PAUSE_PATH = "silence.mp3"
 PAUSE_LOG_PATH = "pause.log"
-SRC_TEMP_PATH = "src.mp3"
+TEMP_MP3_PATH = "src.mp3"
+TEMP_MERGE_PATH = "merged.mp3"
+MERGE_LOG_PATH = "merge.log"
 DURATION_LOG_PATH = "duration.log"
 PADDING_LEN = 2
 
 
-def silence(seconds: int) -> bytes:
+def write_silence(seconds: int, path: str) -> None:
     """
     Generate silent audio encoded in mp3 format. Note that we have to match the sampling
     frequency (24 kHz) of the audio returned by gTTS.
     """
     silence_cmd = f"ffmpeg -f lavfi -i anullsrc=r=24000:cl=mono -t {seconds} "
-    silence_cmd += f"-b:a 32k -acodec libmp3lame -y {PAUSE_PATH}"
+    silence_cmd += f"-b:a 32k -acodec libmp3lame -y {path}"
     silence_cmd += f" > {PAUSE_LOG_PATH} 2>&1"
     exit_code = os.system(silence_cmd)
     if exit_code != 0:
@@ -30,9 +31,18 @@ def silence(seconds: int) -> bytes:
             "Generatation of silent MP3 with ffmpeg failed."
             f" Check output in {PAUSE_LOG_PATH}."
         )
-    with open(PAUSE_PATH, "rb") as pause_file:
-        pause = pause_file.read()
-    return pause
+
+
+def merge_mp3(path1: str, path2: str) -> None:
+    """ Merge two mp3 files and store the result into `path1`. """
+    merge_cmd = f"ffmpeg -i \"concat:{path1}|{path2}\" -acodec copy {TEMP_MERGE_PATH} "
+    merge_cmd += f" -y > {MERGE_LOG_PATH} 2>&1"
+    exit_code = os.system(merge_cmd)
+    if exit_code != 0:
+        raise RuntimeError(
+            f"Failed to merge mp3 files. Check output in {MERGE_LOG_PATH}."
+        )
+    os.rename(TEMP_MERGE_PATH, path1)
 
 
 def main(
@@ -50,9 +60,7 @@ def main(
         src_text = input_file.read()
 
     # Initialize audio file with padding.
-    audio_stream = open(output_path, "wb")
-    pause = silence(PADDING_LEN)
-    audio_stream.write(pause)
+    write_silence(PADDING_LEN, output_path)
 
     # Generate translated audio and write to file.
     translator = Translator()
@@ -71,8 +79,8 @@ def main(
         dest_speech = gTTS(dest_line, lang=dest_lang, slow=slow)
 
         # Get length of source sentence.
-        src_speech.save(SRC_TEMP_PATH)
-        duration_cmd = f"mp3info -p \"%S\" {SRC_TEMP_PATH} > {DURATION_LOG_PATH} 2>&1"
+        src_speech.save(TEMP_MP3_PATH)
+        duration_cmd = f"mp3info -p \"%S\" {TEMP_MP3_PATH} > {DURATION_LOG_PATH} 2>&1"
         exit_code = os.system(duration_cmd)
         if exit_code != 0:
             raise RuntimeError(
@@ -82,23 +90,19 @@ def main(
         with open(DURATION_LOG_PATH) as duration_file:
             src_duration = int(duration_file.read())
 
-        # Generate pause. 
-        pause = silence(round(src_duration * PAUSE_MULT))
-
-        # Append source speech, pause, dest speech, pause to audio stream.
+        # Append first sentence, pause, second sentence, pause to audio stream.
         if src_first:
             ordered_speeches = [src_speech, dest_speech]
         else:
             ordered_speeches = [dest_speech, src_speech]
         for speech in ordered_speeches:
-            speech.write_to_fp(audio_stream)
-            audio_stream.write(pause)
-
-    # Close audio stream.
-    audio_stream.close()
+            speech.save(TEMP_MP3_PATH)
+            merge_mp3(output_path, TEMP_MP3_PATH)
+            write_silence(round(src_duration * PAUSE_MULT), TEMP_MP3_PATH)
+            merge_mp3(output_path, TEMP_MP3_PATH)
 
     # Cleanup files for pause generation.
-    cleanup_paths = [PAUSE_PATH, PAUSE_LOG_PATH, SRC_TEMP_PATH, DURATION_LOG_PATH]
+    cleanup_paths = [PAUSE_LOG_PATH, TEMP_MP3_PATH, TEMP_MERGE_PATH, MERGE_LOG_PATH, DURATION_LOG_PATH]
     for path in cleanup_paths:
         if os.path.isfile(path):
             os.remove(path)
